@@ -1,0 +1,16 @@
+# Keep source, scripts and documentation as LF in the repository. Windows
+# shells (devkitPro MSYS2 / Git Bash) are happier with LF shell scripts.
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Game assets and build products are binary and must never be committed.
+*.iso binary
+*.chd binary
+*.dol binary
+*.elf binary
+*.ps2 binary
+*.raw binary
+*.IRX binary

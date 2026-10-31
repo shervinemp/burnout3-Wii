@@ -1,0 +1,30 @@
+Burnout 3: Takedown - Wii static recompilation
+Copyright (C) 2026 Shervin Naseri and contributors
+
+This repository is licensed under the GNU General Public License, version 3
+or (at your option) any later version. See LICENSE and LICENSES/. Human-readable
+credits and thanks are in CREDITS.md.
+
+This licence covers only the original source code in this repository. It does
+not grant any rights to Burnout 3: Takedown, its executable, its data files, or
+any other work owned by Electronic Arts or its licensors.
+
+Burnout 3: Takedown is a trademark of Electronic Arts Inc. Criterion Games is a
+studio of Electronic Arts. Nintendo, Wii, GameCube, PlayStation and PS2 are
+trademarks of their respective owners. This is an unofficial, non-commercial fan project. It is not affiliated with,
+sponsored by, or endorsed by Electronic Arts, Criterion Games, Nintendo, Sony,
+PCSX2, Dolphin, or any other project mentioned here. Do not sell it or present
+it as an official product.
+
+No game assets, disc images, executables, memory-card images, or generated
+recompiled game code are distributed in this repository. You must supply your
+own legally owned copy of Burnout 3: Takedown (PlayStation 2, NTSC-U,
+SLUS-210.50) to build and run it.
+
+Do not distribute prebuilt binaries or the generated `gen/`/`gen_iop/` trees:
+they are derived from the game's copyrighted executable and are not covered by
+this project's licence.
+
+This software is experimental and comes with absolutely no warranty, to the
+extent permitted by law. See the GNU General Public License for the full
+disclaimer.

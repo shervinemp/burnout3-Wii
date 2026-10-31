@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<app version="1">
+  <name>Burnout 3 (recompiled)</name>
+  <coder>sherv</coder>
+  <version>console test</version>
+  <release_date>20261016000000</release_date>
+  <short_description>Burnout 3: Takedown, statically recompiled</short_description>
+  <long_description>
+Unofficial, non-commercial fan project. Burnout 3: Takedown is a trademark of
+Electronic Arts; this project is not affiliated with or endorsed by EA or Criterion.
+No game assets are included: you must supply your own legally owned copy.
+
+Burnout 3: Takedown (PS2, NTSC-U) recompiled for the Wii.
+
+Needs your own copy of the game as burnout3.iso in this folder, or in
+burnout3/ on the SD card or a FAT32/NTFS USB drive (data and app may
+be split; see README.txt). GameCube controller or Classic Controller.
+
+run.log in the data folder is the log; with the console test's auto.txt
+it also holds the race benchmark ("bench:" line) and prof.bin, a
+profile of the race start. Delete auto.txt to play normally.
+
+Credits: PCSX2, Dolphin, PS2SDK, extrems/libntfs, NTFS-3G, libchdr/MAME
+and devkitPro/libogc. Full list in CREDITS.md.
+  </long_description>
+</app>

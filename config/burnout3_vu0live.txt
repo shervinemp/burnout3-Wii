@@ -1,0 +1,27 @@
+live after the calls of each entry (what a native routine has to leave behind):
+@0000 (3 calls; in 4787D0 479610 47F6D0 4839E0): vf2 vf3 vf4 vf5 vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0028 (1 calls; in 4787D0 479610 47F6D0 4839E0): vf4 vf5 vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0060 (3 calls; in 4787D0 479610 47F6D0 4839E0): vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@00C0 (1 calls; in 4787D0 479610 47F6D0 4839E0): vf5.w vf6.w vf7.w vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0138 (1 calls; in 4787D0 479610 47F6D0 4839E0): vf5.w vf6.w vf7.w vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0388 (2 calls; in 4787D0 479610 47F6D0 4839E0): vf2.xyz vf4.xyz vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23 vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0390 (1 calls; in 4787D0 479610 47F6D0 4839E0): vf2.xyz vf4.xyz vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23 vf24 vi1 vi2 vi7 vi8 vi15 Q
+@03D8 (3 calls; in 4787D0 479610 47F6D0 4839E0): vf2.xyz vf4.xyz vf5 vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@03E0 (1 calls; in 4787D0 479610 47F6D0 4839E0): vf2.xyz vf4.xyz vf5 vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0550 (1 calls; in 4787D0 479610 47F6D0): vf2.xyz vf4.xyz vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23 vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0598 (1 calls; in 4787D0 479610 47F6D0): vf2.xyz vf4.xyz vf5 vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@07D8 (2 calls; in 4787D0 479610 47F6D0): vf1 vf2 vf3 vf4 vf5 vf6 vf7 vf8 vf9 vf10 vf11 vf14 vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0920 (2 calls; in 4787D0 479610 47F6D0): vf5.w vf6.w vf7.w vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi3 vi7 vi8 vi15 Q
+@0968 (1 calls; in 4787D0 479610 47F6D0): vf1 vf2 vf3 vf4 vf5 vf6.w vf7.w vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi3 vi7 vi8 vi15 Q
+@0998 (1 calls; in 4787D0 479610 47F6D0): vf1 vf2 vf3 vf4 vf5 vf6 vf7 vf8 vf9 vf10 vf19 vf22.w vf23.w vf24 vi1 vi2 vi3 vi7 vi8 vi15 Q
+@09D8 (1 calls; in 4787D0 479610 47F6D0): vf1 vf2 vf3 vf4 vf5 vf6 vf7 vf8 vf9 vf10 vf19 vf22.w vf23.w vf24 vi1 vi2 vi3 vi7 vi8 vi15 Q
+@0A18 (3 calls; in 4787D0 479610 47F6D0): vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0A50 (1 calls; in 4787D0 47F6D0): vf6.w vf7.w vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0A90 (1 calls; in 4787D0 47F6D0): vf2 vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi13 vi14 vi15 Q
+@0AD8 (1 calls; in 4787D0 47F6D0): vf2 vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi6 vi7 vi8 vi13 vi14 vi15 Q
+@0B50 (2 calls; in 4787D0 47F6D0): vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+@0DA8 (1 calls; in 4787D0): vf1 vf2 vf3 vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi6 vi7 vi8 vi15 Q
+@0DD0 (1 calls; in 4787D0): vf1 vf2 vf3 vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi6 vi7 vi8 vi15 Q
+@0DF8 (1 calls; in 4787D0): vf1 vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi6 vi7 vi8 vi15 Q
+live after an indirect call's return: vf5.w vf6 vf7 vf8 vf9 vf10.w vf19 vf22.w vf23.w vf24 vi1 vi2 vi7 vi8 vi15 Q
+an indirect call may read: vf8 vf10.w vf19 vf22.w vf23.w vf24 vi2 Q

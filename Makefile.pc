@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# PC development host build (run under devkitPro's MSYS2 or any POSIX shell with gcc).
+#   make -f Makefile.pc -j32
+#   make -f Makefile.pc REL=1 -j32   optimized, without the debugging checks (build-pcr)
+CC      := gcc
+ifeq ($(REL),1)
+OPT     ?= -O2
+DBG     :=
+OUT     := build-pcr
+else ifeq ($(PROF),1)
+OPT     ?= -O2
+DBG     := -DPS2_PROFILE
+OUT     := build-pcp
+else
+OPT     ?= -O1
+DBG     := -g -DPS2_TRACE_CALLS -DPS2_DYNAMIC_IO -DPS2_PROFILE -DPS2_FPU_CHECK
+OUT     := build-pc
+endif
+CFLAGS  := $(OPT) $(DBG) -fno-strict-aliasing -Iruntime -Iplatform -Igen -Wall -Wno-unused-label \
+           -Wno-unused-variable -Wno-unused-but-set-variable -Wno-maybe-uninitialized
+GENFLAGS:= $(OPT) $(DBG) -fno-strict-aliasing -Iruntime -Iplatform -Igen -w
+GEN_SRC := $(wildcard gen/recomp_*.c) gen/functable.c $(wildcard gen/vu0_*.c gen/vu1_*.c) gen/vu_progs.c
+IOP_SRC := $(wildcard gen_iop/*/*.c) gen_iop/modules.c
+RT_SRC  := $(filter-out runtime/gs_null.c,$(wildcard runtime/*.c)) platform/pc/plat_pc.c platform/pc/main_pc.c
+GEN_OBJ := $(patsubst gen/%.c,$(OUT)/gen/%.o,$(GEN_SRC))
+IOP_OBJ := $(patsubst %.c,$(OUT)/%.o,$(IOP_SRC))
+RT_OBJ  := $(patsubst %.c,$(OUT)/%.o,$(RT_SRC))
+
+all: $(OUT)/burnout3
+
+$(OUT)/burnout3: $(GEN_OBJ) $(IOP_OBJ) $(RT_OBJ)
+	$(CC) -o $@ $^ -lpthread -lm
+
+$(OUT)/gen/%.o: gen/%.c runtime/ps2_recomp.h runtime/ps2_mmi.h gen/funcs.h
+	@mkdir -p $(dir $@)
+	$(CC) $(GENFLAGS) -c $< -o $@
+
+$(OUT)/gen_iop/%.o: gen_iop/%.c runtime/ps2_recomp.h runtime/iop.h
+	@mkdir -p $(dir $@)
+	$(CC) $(GENFLAGS) -Iruntime -c $< -o $@
+
+$(OUT)/%.o: %.c runtime/*.h platform/plat.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(OUT)
+
+# VU microprograms: with the interpreter's float clamping, so "--vu check" compares exactly
+$(OUT)/gen/vu%.o: gen/vu%.c runtime/vu_rec.h runtime/hw.h runtime/vu.h
+	@mkdir -p $(dir $@)
+	$(CC) $(GENFLAGS) -DVU_EXACT -c $< -o $@

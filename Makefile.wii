@@ -1,0 +1,124 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Wii build (devkitPPC + libogc >= 3.1.0).
+#   make -f Makefile.wii -j32        -> build-wii/burnout3.dol
+# Run in Dolphin, or copy to sd:/apps/burnout3/boot.dol with the disc image at
+# sd:/burnout3/burnout3.iso, usb:/burnout3/burnout3.iso (FAT32), or
+# ntfs0:/burnout3/burnout3.iso (NTFS; external/libntfs). tools/wii/package.sh
+# and its --split mode lay these out.
+DEVKITPRO ?= /opt/devkitpro
+DEVKITPPC ?= $(DEVKITPRO)/devkitPPC
+LIBOGC    := $(DEVKITPRO)/libogc
+PREFIX    := $(DEVKITPPC)/bin/powerpc-eabi-
+CC        := $(PREFIX)gcc
+ELF2DOL   := $(DEVKITPRO)/tools/bin/elf2dol
+PYTHON    ?= python3
+OUT       := build-wii
+
+MACHDEP   := -DGEKKO -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -fno-asynchronous-unwind-tables -fno-unwind-tables
+# PS2 RAM lives at a fixed MEM2 address (see platform/wii/plat_wii.c)
+DEFS      := -DPS2_RAM_FIXED_BASE=0x90100000u
+# UART=1: mirror the log to Dolphin's OSReport UART (debugging in Dolphin)
+UART      ?= 1
+ifeq ($(UART),1)
+DEFS      += -DWII_UART_LOG
+endif
+# XDEFS=-DWTIME: the clock-read counters of runtime/wtime.c (autopilot "wstat 9"); build them into another OUT
+DEFS      += $(XDEFS)
+OPT       ?= -O2
+# the recompiled code is most of MEM1: optimize it for size
+GENOPT    ?= -Os
+# VU microprograms are small and hot
+VUOPT     ?= -O2
+NTFS_DIR  := external/libntfs
+NTFS_SRC  := $(wildcard $(NTFS_DIR)/source/*.c)
+NTFS_OBJ  := $(patsubst $(NTFS_DIR)/source/%.c,$(OUT)/libntfs/%.o,$(NTFS_SRC))
+NTFS_A    := $(OUT)/libntfs.a
+AR        := $(PREFIX)ar
+INC       := -Iruntime -Iplatform -Igen -I$(NTFS_DIR)/include -I$(LIBOGC)/include
+# guest arithmetic: a multiply and an add stay two rounded operations, as on
+# the PS2 and in the PC build (gcc fuses them into fmadds on PowerPC otherwise:
+# results differ in the last bits, and x*y - x*y is no longer 0)
+GUESTFP   ?= -ffp-contract=off
+CFLAGS    := $(OPT) $(MACHDEP) $(DEFS) -fno-strict-aliasing $(INC) -Wall -Wno-unused-label -Wno-unused-variable \
+             -Wno-unused-but-set-variable -Wno-maybe-uninitialized -Wno-format-truncation
+GENFLAGS  := $(GENOPT) $(MACHDEP) $(DEFS) $(GUESTFP) -fno-strict-aliasing $(INC) -w
+VUFLAGS   := $(VUOPT) $(MACHDEP) $(DEFS) $(GUESTFP) -fno-strict-aliasing $(INC) -w
+LDFLAGS   := $(MACHDEP) -Wl,-Map,$(OUT)/burnout3.map -L$(LIBOGC)/lib/wii
+LIBS      := $(NTFS_A) -lwiiuse -lbte -lfat -logc -lm
+
+GEN_SRC   := $(wildcard gen/recomp_*.c) gen/functable.c $(wildcard gen/vu0_*.c gen/vu1_*.c) gen/vu_progs.c
+IOP_SRC   := $(wildcard gen_iop/*/*.c) gen_iop/modules.c
+RT_SRC    := $(filter-out runtime/gs_soft.c runtime/gs_null.c,$(wildcard runtime/*.c)) platform/wii/gs_gx.c platform/wii/plat_wii.c platform/wii/main_wii.c platform/wii/pmc.c platform/wii/dsp_mix.c
+GEN_OBJ   := $(patsubst %.c,$(OUT)/%.o,$(GEN_SRC))
+IOP_OBJ   := $(patsubst %.c,$(OUT)/%.o,$(IOP_SRC))
+RT_OBJ    := $(patsubst %.c,$(OUT)/%.o,$(sort $(RT_SRC))) $(OUT)/platform/wii/green.o
+
+all: $(OUT)/burnout3.dol
+
+# everything but the recompiled EE code (quick compile check)
+rt: $(RT_OBJ) $(IOP_OBJ)
+
+$(OUT)/burnout3.dol: $(OUT)/burnout3.elf
+	$(ELF2DOL) $< $@
+	$(PYTHON) -I tools/wii/dolfix.py $@
+
+# libogc's start-up overwrites 128 bytes at 0x81000000 for a moment (the DSP's
+# boot code, tools/wii/dspcheck.py): no library code may be there. The
+# program's own code comes first, the recompiled game code last (not running
+# yet at start-up), then padding as far as needed (linked twice then), then
+# the libraries.
+PAD_OBJ   := $(OUT)/platform/wii/dsppad.o
+LINK       = $(CC) $(LDFLAGS) -Wl,-u,__dsp_pad -o $@ $(RT_OBJ) $(IOP_OBJ) $(GEN_OBJ) $(PAD_OBJ) $(LIBS)
+
+$(OUT)/burnout3.elf: $(RT_OBJ) $(IOP_OBJ) $(GEN_OBJ) $(NTFS_A) platform/wii/dsppad.S
+	$(CC) $(MACHDEP) -DPAD=0 -c platform/wii/dsppad.S -o $(PAD_OBJ)
+	$(LINK)
+	pad=$$($(PYTHON) -I tools/wii/dspcheck.py --pad $(PREFIX)nm $@) && if [ "$$pad" != 0 ]; then 		echo "padding $$pad bytes before the libraries" && 		$(CC) $(MACHDEP) -DPAD=$$pad -c platform/wii/dsppad.S -o $(PAD_OBJ) && $(LINK); fi
+	$(PREFIX)size $@
+	$(PYTHON) -I tools/wii/dspcheck.py $(PREFIX)nm $@
+
+$(OUT)/gen/%.o: gen/%.c runtime/ps2_recomp.h runtime/ps2_mmi.h gen/funcs.h
+	@mkdir -p $(dir $@)
+	$(CC) $(GENFLAGS) -c $< -o $@
+
+$(OUT)/gen/vu%.o: gen/vu%.c runtime/vu_rec.h runtime/hw.h runtime/vu.h
+	@mkdir -p $(dir $@)
+	$(CC) $(VUFLAGS) -c $< -o $@
+
+$(OUT)/gen_iop/%.o: gen_iop/%.c runtime/ps2_recomp.h runtime/iop.h
+	@mkdir -p $(dir $@)
+	$(CC) $(GENFLAGS) -c $< -o $@
+
+$(NTFS_A): $(NTFS_OBJ)
+	$(AR) rcs $@ $^
+
+$(OUT)/libntfs/%.o: $(NTFS_DIR)/source/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -w -I$(NTFS_DIR)/source -DHAVE_CONFIG_H -c $< -o $@
+
+$(OUT)/%.o: %.S
+	@mkdir -p $(dir $@)
+	$(CC) $(MACHDEP) -c $< -o $@
+
+$(OUT)/%.o: %.c runtime/*.h platform/plat.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# memcpy, memcmp and memset: the compiler must not make calls of themselves out of their loops
+$(OUT)/runtime/memfast.o: CFLAGS += -fno-builtin -fno-tree-loop-distribute-patterns -fno-tree-vectorize
+
+# the DSP mixer's microcode (tools/dsp/dspmix.s) as a C array for its driver
+GCDSPTOOL := $(DEVKITPRO)/tools/bin/gcdsptool
+$(OUT)/dsp/dspmix.h: tools/dsp/dspmix.s
+	@mkdir -p $(dir $@)
+	$(GCDSPTOOL) -c $< -o $@
+$(OUT)/platform/wii/dsp_mix.o: $(OUT)/dsp/dspmix.h
+$(OUT)/platform/wii/dsp_mix.o: CFLAGS += -I$(OUT)/dsp
+$(OUT)/runtime/iop_sd.o: platform/wii/dsp_mix.h runtime/iop_rev.h
+
+# native versions of guest code (VU0 entries, EE overrides) compute as it does
+$(OUT)/runtime/vu.o $(OUT)/runtime/hle_audio.o $(OUT)/runtime/hle.o: CFLAGS += $(GUESTFP)
+
+clean:
+	rm -rf $(OUT)

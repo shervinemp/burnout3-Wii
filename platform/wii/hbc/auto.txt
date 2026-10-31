@@ -1,0 +1,4 @@
+0 pace 0
+0 wstat 5
+0 benchprof 5
+0 widescreen 0

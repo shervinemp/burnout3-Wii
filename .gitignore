@@ -1,0 +1,37 @@
+# Build products and generated recompiled game code: never commit these.
+work/
+build*/
+gen/
+gen_iop/
+gen.*/
+dist/
+release/
+*.dol
+*.DOL
+*.elf
+*.ELF
+*.map
+*.o
+*.a
+
+# Game assets, disc images, memory cards: never commit these.
+*.iso
+*.ISO
+*.chd
+*.CHD
+*.ps2
+*.PS2
+*.raw
+*.RAW
+*.IRX
+SLUS_210.50
+burnout3.iso
+
+# Local tooling and caches.
+__pycache__/
+*.pyc
+.claude/
+.vscode/
+.idea/
+*.log
+*.tmp
